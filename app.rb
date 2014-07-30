@@ -19,7 +19,7 @@ class App < Sinatra::Application
     if current_user
       users = User.all
 
-      @user = User.find(current_user["id"].to_i)
+      @user = User.find(current_user.id)
       fish = @user.fishes
 
       erb :signed_in, locals: {current_user: user, users: users, fish_list: fish}
@@ -86,7 +86,7 @@ class App < Sinatra::Application
 
   post "/fish" do
 
-    @fish = Fish.create(name: params[:name], wikipedia_page: params[:wikipedia_page], user_id: current_user["id"].to_i )
+    @fish = Fish.create(name: params[:name], wikipedia_page: params[:wikipedia_page], user_id: current_user.id )
 
     if @fish.valid?
       @fish.save
@@ -126,12 +126,7 @@ class App < Sinatra::Application
 
   def current_user
     if session[:user_id]
-      select_sql = <<-SQL
-      SELECT * FROM users
-      WHERE id = #{session[:user_id]}
-      SQL
-
-      @database_connection.sql(select_sql).first
+      User.find(session[:user_id])
     else
       nil
     end
