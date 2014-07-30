@@ -53,7 +53,7 @@ class App < Sinatra::Application
       user = authenticate_user
 
       if user != nil
-        session[:user_id] = user["id"]
+        session[:user_id] = user.id
       else
         flash[:notice] = "Username/password is invalid"
       end
@@ -85,20 +85,6 @@ class App < Sinatra::Application
   end
 
   post "/fish" do
-    # if validate_fish_params
-    #   insert_sql = <<-SQL
-    #   INSERT INTO fish (name, wikipedia_page, user_id)
-    #   VALUES ('#{params[:name]}', '#{params[:wikipedia_page]}', #{current_user["id"]})
-    #   SQL
-    #
-    #   @database_connection.sql(insert_sql)
-    #
-    #   flash[:notice] = "Fish Created"
-    #
-    #   redirect "/"
-    # else
-    #   erb :"fish/new"
-    # end
 
     @fish = Fish.create(name: params[:name], wikipedia_page: params[:wikipedia_page], user_id: current_user["id"].to_i )
 
@@ -113,26 +99,6 @@ class App < Sinatra::Application
   end
 
   private
-
-  def validate_fish_params
-    if params[:name] != "" && params[:wikipedia_page] != ""
-      return true
-    end
-
-    error_messages = []
-
-    if params[:name] == ""
-      error_messages.push("Name is required")
-    end
-
-    if params[:wikipedia_page] == ""
-      error_messages.push("Wikipedia page is required")
-    end
-
-    flash[:notice] = error_messages.join(", ")
-
-    false
-  end
 
   def validate_authentication_params
     if params[:username] != "" && params[:password] != ""
@@ -154,19 +120,8 @@ class App < Sinatra::Application
     false
   end
 
-  def username_available?(username)
-    existing_users = @database_connection.sql("SELECT * FROM users where username = '#{username}'")
-
-    existing_users.length == 0
-  end
-
   def authenticate_user
-    select_sql = <<-SQL
-    SELECT * FROM users
-    WHERE username = '#{params[:username]}' AND password = '#{params[:password]}'
-    SQL
-
-    @database_connection.sql(select_sql).first
+    User.where(username: params[:username], password: params[:password]).first
   end
 
   def current_user
