@@ -68,12 +68,9 @@ class App < Sinatra::Application
   end
 
   delete "/users/:id" do
-    delete_sql = <<-SQL
-    DELETE FROM users
-    WHERE id = #{params[:id]}
-    SQL
 
-    @database_connection.sql(delete_sql)
+    @user = User.find(params[:id])
+    @user.destroy
 
     redirect "/"
   end
@@ -82,7 +79,7 @@ class App < Sinatra::Application
     erb :"fish/new"
   end
 
-  get "/fish/:id" do
+  get "/fish/:id" d
     fish = @database_connection.sql("SELECT * FROM fish WHERE id = #{params[:id]}").first
     erb :"fish/show", locals: {fish: fish}
   end
