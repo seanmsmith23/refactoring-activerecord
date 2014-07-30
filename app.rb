@@ -45,7 +45,7 @@ class App < Sinatra::Application
 
   post "/sessions" do
     if validate_authentication_params
-      user = authenticate_user
+      user = User.authenticate_user(params[:username], params[:password])
 
       if user != nil
         session[:user_id] = user.id
@@ -115,10 +115,6 @@ class App < Sinatra::Application
     false
   end
 
-  def authenticate_user
-    User.where(username: params[:username], password: params[:password]).first
-  end
-
   def current_user
     if session[:user_id]
       User.find(session[:user_id])
@@ -126,4 +122,5 @@ class App < Sinatra::Application
       nil
     end
   end
+
 end
