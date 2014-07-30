@@ -80,10 +80,7 @@ class App < Sinatra::Application
   end
 
   get "/fish/:id" do
-    # fish = @database_connection.sql("SELECT * FROM fish WHERE id = #{params[:id]}").first
-
     fish = Fish.find(params[:id])
-
     erb :"fish/show", locals: {fish: fish}
   end
 
