@@ -1,7 +1,8 @@
 require "sinatra"
 require "gschool_database_connection"
 require "rack-flash"
-require_relative "models/User"
+require_relative "models/user"
+require_relative "models/fish"
 
 class App < Sinatra::Application
   enable :sessions
@@ -17,7 +18,10 @@ class App < Sinatra::Application
 
     if current_user
       users = User.all
-      fish = @database_connection.sql("SELECT * FROM fish WHERE user_id = #{current_user["id"]}")
+
+      @user = User.find(current_user["id"].to_i)
+      fish = @user.fishes
+
       erb :signed_in, locals: {current_user: user, users: users, fish_list: fish}
     else
       erb :signed_out

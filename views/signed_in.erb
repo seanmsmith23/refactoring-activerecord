@@ -28,7 +28,7 @@
 <ul class="fish-list">
   <% fish_list.each do |fish| %>
     <li>
-      <a href="/fish/<%= fish["id"] %>"><%= fish["name"] %></a>
+      <a href="/fish/<%= fish.id %>"><%= fish.name %></a>
     </li>
   <% end %>
 </ul>
