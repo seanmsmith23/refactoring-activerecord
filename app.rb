@@ -85,18 +85,29 @@ class App < Sinatra::Application
   end
 
   post "/fish" do
-    if validate_fish_params
-      insert_sql = <<-SQL
-      INSERT INTO fish (name, wikipedia_page, user_id)
-      VALUES ('#{params[:name]}', '#{params[:wikipedia_page]}', #{current_user["id"]})
-      SQL
+    # if validate_fish_params
+    #   insert_sql = <<-SQL
+    #   INSERT INTO fish (name, wikipedia_page, user_id)
+    #   VALUES ('#{params[:name]}', '#{params[:wikipedia_page]}', #{current_user["id"]})
+    #   SQL
+    #
+    #   @database_connection.sql(insert_sql)
+    #
+    #   flash[:notice] = "Fish Created"
+    #
+    #   redirect "/"
+    # else
+    #   erb :"fish/new"
+    # end
 
-      @database_connection.sql(insert_sql)
+    @fish = Fish.create(name: params[:name], wikipedia_page: params[:wikipedia_page], user_id: current_user["id"].to_i )
 
+    if @fish.valid?
+      @fish.save
       flash[:notice] = "Fish Created"
-
       redirect "/"
     else
+      flash[:notice] = @fish.errors.full_messages
       erb :"fish/new"
     end
   end
